@@ -6,16 +6,35 @@
 //
 
 import SwiftUI
+import MapKit
 
 struct MapViewerTabView: View {
+    
+    @StateObject var viewModel = MapViewerTabViewModel()
+    
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+        TabView {
+            Map {
+                
+            }
+            .tabItem {
+                Label("Map", systemImage: "map")
+            }
+            LazyVStack {
+                
+            }
+            .tabItem {
+                Label("Layers", systemImage: "square.2.layers.3d.fill")
+            }
+            LazyVStack {
+                ForEach(viewModel.wmsList) { wms in
+                    Text(wms.name)
+                }
+            }
+            .tabItem {
+                Label("WMS", systemImage: "square.and.pencil")
+            }
         }
-        .padding()
     }
 }
 
