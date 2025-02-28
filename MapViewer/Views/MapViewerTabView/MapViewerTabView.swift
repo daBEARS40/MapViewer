@@ -11,6 +11,7 @@ import MapKit
 struct MapViewerTabView: View {
     
     @StateObject var viewModel = MapViewerTabViewModel()
+    @State private var data: GeoserverResponseDTO?
     
     var body: some View {
         TabView {
@@ -34,6 +35,19 @@ struct MapViewerTabView: View {
             }
             .tabItem {
                 Label("WMS", systemImage: "square.and.pencil")
+            }
+        }
+        .task {
+            do {
+                data = try await GeoserverService().getLayerCapability()
+            } catch GeoserverError.invalidUrl {
+                print("Invalid URL")
+            } catch GeoserverError.invalidResponse {
+                print("Invalid Response")
+            } catch GeoserverError.invalidData {
+                print("Invalid Data")
+            } catch {
+                print("Unexpected Error")
             }
         }
     }

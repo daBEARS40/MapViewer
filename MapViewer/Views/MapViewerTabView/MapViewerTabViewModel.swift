@@ -9,5 +9,5 @@ import SwiftUI
 
 final class MapViewerTabViewModel: ObservableObject {
     var title: String = "Map"
-    var wmsList: [WMSData] = []
+    var wmsList: [MapService] = []
 }
