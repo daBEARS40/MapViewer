@@ -27,8 +27,9 @@ struct MapViewerTabView: View {
                 Label("Layers", systemImage: "square.2.layers.3d.fill")
             }
             LazyVStack {
-                ForEach(viewModel.wmsList) { wms in
+                ForEach(MockData.wmsList) { wms in
                     Text(wms.name)
+                    
                 }
             }
             .tabItem {
