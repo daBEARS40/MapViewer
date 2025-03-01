@@ -5,6 +5,8 @@
 //  Created by Lane Levesque on 2025-02-28.
 //
 //  Apple Docs on XMLParserDelegate: https://developer.apple.com/documentation/foundation/xmlparserdelegate
+//
+//  Another useful link: https://blog.logrocket.com/xml-parsing-swift/
 
 import ObjectiveC
 import Foundation
