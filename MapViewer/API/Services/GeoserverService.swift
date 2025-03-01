@@ -12,7 +12,7 @@ struct GeoserverService {
     let baseUrl: String = "https://geoserver-pr2.i-opentech.com/geoserver/NorthVancouver/wms/?service=wms&version=1.3.0&request=GetCapabilities"
     let user = "rarmstrong"
     let pass = "Fr33f00d"
-    let wmsParser = WMSCapabilitiesParser()
+    //let wmsParser = WMSCapabilitiesParser()
     var userAndPass: String {
         return "\(user):\(pass)".data(using: .utf8)?.base64EncodedString() ?? ""
     }
@@ -28,10 +28,19 @@ struct GeoserverService {
         let (data, _) = try await URLSession.shared.data(for: request)
         
         do {
-            let xmlParser = XMLParser(data: data)
-            xmlParser.delegate = wmsParser
-            xmlParser.parse()
-            return LayerDTO()
+            let xmlParser = WMSCapabilitiesParser(data: data)
+            let tree = xmlParser.parse()
+            return parseLayerCapability(node: tree ?? XMLNode(tag: "", data: "", attributes: [:], childNodes: []))
         }
+    }
+    
+    func parseLayerCapability(node: XMLNode) -> LayerDTO {
+        var rootLayer = LayerDTO()
+        
+        for xmlNode in node.childNodes {
+            
+        }
+        
+        return rootLayer
     }
 }

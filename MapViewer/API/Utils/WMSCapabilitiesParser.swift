@@ -15,49 +15,42 @@ import Foundation
 
 class WMSCapabilitiesParser: NSObject, XMLParserDelegate {
     
-    var stack: [LayerDTO] = []
-    var rootLayer: LayerDTO = LayerDTO()
-    var currentLayer: LayerDTO = LayerDTO()
-    
-    func parserDidStartDocument(_ parser: XMLParser) {
-        print("Parsing Started.")
-        print("Line number: \(parser.lineNumber)")
+    private let parser: XMLParser
+    private var stack = [XMLNode]()
+    private var tree: XMLNode?
+
+    init(data: Data) {
+        parser = XMLParser(data: data)
+        super.init()
+        parser.delegate = self
     }
-    
-    func parser(
-            _ parser: XMLParser,
-            didStartElement elementName: String,
-            namespaceURI: String?,
-            qualifiedName qName: String?,
-            attributes attributeDict: [String : String] = [:]
-        ) {
-            if (elementName == "Layer") {
-                print("starting \(elementName)")
-            }
+
+    func parse() -> XMLNode? {
+        parser.parse()
+
+        guard parser.parserError == nil else {
+            return nil
         }
-    
-    func parser(
-            _ parser: XMLParser,
-            foundCharacters string: String
-        ) {
-            if (string.trimmingCharacters(in: .whitespacesAndNewlines) != "") {
-                print(string)
-            }
+
+        return tree
+    }
+
+    func parser(_ parser: XMLParser, didStartElement elementName: String, namespaceURI: String?, qualifiedName qName: String?, attributes attributeDict: [String: String] = [:]) {
+        let node = XMLNode(tag: elementName, data: "", attributes: attributeDict, childNodes: [])
+        stack.append(node)
+    }
+
+    func parser(_ parser: XMLParser, didEndElement elementName: String, namespaceURI: String?, qualifiedName qName: String?) {
+        let lastElement = stack.removeLast()
+
+        if let last = stack.last {
+            last.childNodes += [lastElement]
+        } else {
+            tree = lastElement
         }
-    
-    func parser(
-            _ parser: XMLParser,
-            didEndElement elementName: String,
-            namespaceURI: String?,
-            qualifiedName qName: String?
-        ) {
-            if (elementName == "Layer") {
-                print("ending \(elementName)")
-            }
-        }
-    
-    func parserDidEndDocument(_ parser: XMLParser) {
-        print("Parsing finished.")
-        print("Line number: \(parser.lineNumber)")
+    }
+
+    func parser(_ parser: XMLParser, foundCharacters string: String) {
+        stack.last?.data = string
     }
 }

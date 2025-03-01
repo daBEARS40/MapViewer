@@ -23,6 +23,13 @@ struct MapViewerTabView: View {
                 Label("Map", systemImage: "map")
             }
             LazyVStack {
+                Button(action: {
+                    Task {
+                        try await getLayerDetails()
+                    }
+                }) {
+                    Label("button", systemImage: "arrow.up")
+                }
                 
             }
             .tabItem {
@@ -38,19 +45,19 @@ struct MapViewerTabView: View {
                 Label("WMS", systemImage: "square.and.pencil")
             }
         }
-        .task {
-            do {
-                data = try await service.getLayerCapability()
-                //print(data)
-            } catch GeoserverError.invalidUrl {
-                print("Invalid URL")
-            } catch GeoserverError.invalidResponse {
-                print("Invalid Response")
-            } catch GeoserverError.invalidData {
-                print("Invalid Data")
-            } catch {
-                print("Unexpected Error")
-            }
+    }
+    
+    func getLayerDetails() async throws {
+        do {
+            data = try await service.getLayerCapability()
+        } catch GeoserverError.invalidUrl {
+            print("Invalid URL")
+        } catch GeoserverError.invalidResponse {
+            print("Invalid Response")
+        } catch GeoserverError.invalidData {
+            print("Invalid Data")
+        } catch {
+            print("Unexpected Error")
         }
     }
 }
