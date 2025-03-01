@@ -6,6 +6,8 @@
 //
 import Foundation
 
+import Foundation
+
 struct GeoserverService {
     let baseUrl: String = "https://geoserver-pr2.i-opentech.com/geoserver/NorthVancouver/wms/?service=wms&version=1.3.0&request=GetCapabilities"
     let user = "rarmstrong"
@@ -15,17 +17,21 @@ struct GeoserverService {
         return "\(user):\(pass)".data(using: .utf8)?.base64EncodedString() ?? ""
     }
     
-    func getLayerCapabilities() {
-        guard let url = URL(string: baseUrl) else { return }
+    func getLayerCapability() async throws -> LayerDTO {
+        guard let url = URL(string: baseUrl) else {
+            throw GeoserverError.invalidUrl
+        }
         
         var request = URLRequest(url: url)
         request.setValue("Basic \(userAndPass)", forHTTPHeaderField: "Authorization")
         
-        URLSession.shared.dataTask(with: request) { data, _, _ in
-            guard let data = data else { return }
-            DispatchQueue.main.async {
-                print(String(data: data, encoding: .utf8) ?? "No data")
-            }
-        }.resume()
+        let (data, _) = try await URLSession.shared.data(for: request)
+        
+        do {
+            let xmlParser = XMLParser(data: data)
+            xmlParser.delegate = wmsParser
+            xmlParser.parse()
+            return LayerDTO()
+        }
     }
 }
