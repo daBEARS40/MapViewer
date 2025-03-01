@@ -8,8 +8,8 @@ import Foundation
 
 struct GeoserverService {
     let baseUrl: String = "https://geoserver-pr2.i-opentech.com/geoserver/NorthVancouver/wms/?service=wms&version=1.3.0&request=GetCapabilities"
-    let user = ""
-    let pass = ""
+    let user = "rarmstrong"
+    let pass = "Fr33f00d"
     var userAndPass: String {
         return "\(user):\(pass)".data(using: .utf8)?.base64EncodedString() ?? ""
     }
@@ -19,29 +19,33 @@ struct GeoserverService {
     //var cityName: String = "Abbotsford"
     //var days: Int = 14
     
-    func getLayerCapability() async throws -> GeoserverResponseDTO {
+    func getLayerCapability(completion: @escaping (Result<wmsData, Error>) -> Void){
         guard let url = URL(string: baseUrl) else {
-            throw GeoserverError.invalidUrl
+            completion(.failure(GeoserverError.invalidUrl))
+            return
         }
         
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
         request.setValue("Basic \(userAndPass)", forHTTPHeaderField: "Authorization")
         
-        let (data, response) = try await URLSession.shared.data(from: url)
-        
-        guard let response = response as? HTTPURLResponse, response.statusCode == 200 else {
-            print(response)
-            throw GeoserverError.invalidResponse
-        }
-        
-        do {
-            let decoder = JSONDecoder()
-            decoder.keyDecodingStrategy = .convertFromSnakeCase
-            return try decoder.decode(GeoserverResponseDTO.self, from: data)
-        } catch {
-            print(error)
-            throw GeoserverError.invalidData
-        }
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            if let error = error {
+                completion(.failure(error))
+                return
+            }
+            
+            guard let data = data else {
+                completion(.failure(error!))
+                return
+            }
+            
+            let parser = WMSCapabilitiesParser()
+            if let wmsCapabilities = parser.parse(data: data) {
+                completion(.success(wmsCapabilities))
+            } else {
+                completion(.failure(error!))
+            }
+        }.resume()
     }
 }

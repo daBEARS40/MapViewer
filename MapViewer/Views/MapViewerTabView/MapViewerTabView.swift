@@ -12,6 +12,7 @@ struct MapViewerTabView: View {
     
     @StateObject var viewModel = MapViewerTabViewModel()
     @State private var data: GeoserverResponseDTO?
+    var service: GeoserverService
     
     var body: some View {
         TabView {
@@ -39,20 +40,19 @@ struct MapViewerTabView: View {
         }
         .task {
             do {
-                data = try await GeoserverService().getLayerCapability()
-            } catch GeoserverError.invalidUrl {
-                print("Invalid URL")
-            } catch GeoserverError.invalidResponse {
-                print("Invalid Response")
-            } catch GeoserverError.invalidData {
-                print("Invalid Data")
-            } catch {
-                print("Unexpected Error")
+                service.getLayerCapability { result in
+                    switch result {
+                    case .success(let capabilities):
+                        print("Capabilities: \(capabilities)")
+                    case .failure(let error):
+                        print("Error: \(error)")
+                    }
+                }
             }
         }
     }
 }
 
 #Preview {
-    MapViewerTabView()
+    MapViewerTabView( service: GeoserverService())
 }
