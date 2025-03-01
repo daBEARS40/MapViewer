@@ -29,18 +29,42 @@ struct GeoserverService {
         
         do {
             let xmlParser = WMSCapabilitiesParser(data: data)
-            let tree = xmlParser.parse()
+            var tree = xmlParser.parse()
             return parseLayerCapability(node: tree ?? XMLNode(tag: "", data: "", attributes: [:], childNodes: []))
+            //return LayerDTO()
         }
     }
     
     func parseLayerCapability(node: XMLNode) -> LayerDTO {
         var rootLayer = LayerDTO()
         
-        for xmlNode in node.childNodes {
-            
-        }
+        let version = node.getAttribute("version")
+        
+        rootLayer = buildLayerList(node: node, layer: &rootLayer)
         
         return rootLayer
     }
+    
+    //trying to write recursive function here, go through nodes and return a full layerlist
+    
+    func buildLayerList(node: XMLNode, layer: inout LayerDTO) -> LayerDTO {
+        if node.tag == "Layer" {
+            for childNode in node.childNodes {
+                switch childNode.tag {
+                case "Title":
+                    layer.Title = childNode.data
+                    break
+                default:
+                    break
+                }
+                if childNode.childNodes.count > 0 {
+                    return buildLayerList(node: childNode, layer: &layer)
+                } else {
+                    return layer
+                }
+            }
+        }
+        return layer
+    }
+    
 }
