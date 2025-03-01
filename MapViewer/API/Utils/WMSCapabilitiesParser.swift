@@ -7,6 +7,8 @@
 //  Apple Docs on XMLParserDelegate: https://developer.apple.com/documentation/foundation/xmlparserdelegate
 //
 //  Another useful link: https://blog.logrocket.com/xml-parsing-swift/
+//
+//  Could be the solution to all of my woes? https://www.hackingwithswift.com/forums/swift/xml-parser/10902
 
 import ObjectiveC
 import Foundation
