@@ -11,6 +11,7 @@ import Foundation
 
 class WMSCapabilitiesParser: NSObject, XMLParserDelegate {
     
+    var stack: [LayerDTO] = []
     var rootLayer: LayerDTO = LayerDTO()
     var currentLayer: LayerDTO = LayerDTO()
     
@@ -54,6 +55,5 @@ class WMSCapabilitiesParser: NSObject, XMLParserDelegate {
     func parserDidEndDocument(_ parser: XMLParser) {
         print("Parsing finished.")
         print("Line number: \(parser.lineNumber)")
-        print(rootLayer)
     }
 }
