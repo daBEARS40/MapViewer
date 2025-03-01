@@ -10,6 +10,7 @@ struct GeoserverService {
     let baseUrl: String = "https://geoserver-pr2.i-opentech.com/geoserver/NorthVancouver/wms/?service=wms&version=1.3.0&request=GetCapabilities"
     let user = "rarmstrong"
     let pass = "Fr33f00d"
+    let wmsParser = WMSCapabilitiesParser()
     var userAndPass: String {
         return "\(user):\(pass)".data(using: .utf8)?.base64EncodedString() ?? ""
     }
@@ -19,7 +20,7 @@ struct GeoserverService {
     //var cityName: String = "Abbotsford"
     //var days: Int = 14
     
-    func getLayerCapability(completion: @escaping (Result<wmsData, Error>) -> Void){
+    func getLayerCapability(completion: @escaping (Result<LayerDTO, Error>) -> Void){
         guard let url = URL(string: baseUrl) else {
             completion(.failure(GeoserverError.invalidUrl))
             return
@@ -41,10 +42,10 @@ struct GeoserverService {
             }
             
             let parser = WMSCapabilitiesParser()
-            if let wmsCapabilities = parser.parse(data: data) {
-                completion(.success(wmsCapabilities))
+            if let rootLayer = parser.parse(xmlData: data) {
+                completion(.success(rootLayer))
             } else {
-                completion(.failure(error!))
+                completion(.failure(NSError(domain: "XMLParser", code: 1, userInfo: [NSLocalizedDescriptionKey: "Failed to parse XML"])))
             }
         }.resume()
     }

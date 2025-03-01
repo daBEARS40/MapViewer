@@ -54,5 +54,5 @@ struct MapViewerTabView: View {
 }
 
 #Preview {
-    MapViewerTabView( service: GeoserverService())
+    MapViewerTabView(service: GeoserverService())
 }

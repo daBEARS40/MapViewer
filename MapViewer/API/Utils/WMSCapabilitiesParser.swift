@@ -9,85 +9,181 @@ import ObjectiveC
 import Foundation
 
 class WMSCapabilitiesParser: NSObject, XMLParserDelegate {
-    var wmsData: wmsData?
-        var currentLayer: LayerDTO?
-        var currentBoundingBox: BoundingBoxDTO?
-        var currentElement: String = ""
-        
-        var version: String = ""
-        var capability: CapabilityDTO?
-        var layers: [LayerDTO] = []
-        var boundingBoxes: [BoundingBoxDTO] = []
-        var crsList: [String] = []
-        
-        func parse(data: Data) -> wmsData? {
-            let parser = XMLParser(data: data)
-            parser.delegate = self
-            if parser.parse() {
-                return MapViewer.wmsData(version: version, Capability: capability!)
-            }
+    
+//    var hierarchy = wmsData()
+//    var capability = CapabilityDTO()
+//    var currentVersion: String = ""
+    
+      var currentLayer = LayerDTO()
+      var currentCrsList: [String] = []
+      var currentEXBoundingBox: [Float] = []
+      var currentBoundingBox: [BoundingBoxDTO] = []
+    
+    
+    private var stack: [LayerDTO] = []
+    var rootLayer: LayerDTO?
+    
+    func parse(xmlData: Data) -> LayerDTO? {
+        let parser = XMLParser(data: xmlData)
+        parser.delegate = self
+        if parser.parse() {
+            return rootLayer
+        } else {
             return nil
         }
+    }
+    
+    func parser(_ parser: XMLParser,
+                didStartElement elementName: String,
+                namespaceURI: String?,
+                qualifiedName: String?,
+                foundCharacters string: String,
+                attributes attributeDict: [String : String] = [:]
+    ) {
+        if (elementName == "Layer") {
+            currentLayer = LayerDTO()
+        }
         
-        // MARK: - XMLParser Delegate Methods
-        
-        func parser(_ parser: XMLParser, didStartElement elementName: String, namespaceURI: String?, qualifiedName qName: String?, attributes attributeDict: [String: String] = [:]) {
-            currentElement = elementName
-            
-            if elementName == "WMS_Capabilities" {
-                version = attributeDict["version"] ?? "unknown"
-            } else if elementName == "Layer" {
-                currentLayer = LayerDTO(Abstract: "", BoundingBox: [], CRS: [], EX_GeographicBoundingBox: [], Title: "", Layer: [], Attribution: "")
-            } else if elementName == "BoundingBox" {
-                if let crs = attributeDict["CRS"],
-                   let minx = attributeDict["minx"], let miny = attributeDict["miny"],
-                   let maxx = attributeDict["maxx"], let maxy = attributeDict["maxy"] {
+        if (elementName == "Title") {
+            if (string.trimmingCharacters(in: .whitespacesAndNewlines) != "") {
+                currentLayer.Title = string
+            }
+        }
 
-                    let extent = [Int(minx) ?? 0, Int(miny) ?? 0, Int(maxx) ?? 0, Int(maxy) ?? 0]
-                    let res = [
-                        Int(attributeDict["resx"] ?? "0") ?? 0,
-                        Int(attributeDict["resy"] ?? "0") ?? 0
-                    ]
+        if (elementName == "CRS") {
+            if (string.trimmingCharacters(in: .whitespacesAndNewlines) != "") {
+                currentCrsList.append(string)
+            }
+        }
 
-                    currentBoundingBox = BoundingBoxDTO(crs: crs, extent: extent, res: res)
-                }
-            } else if elementName == "CRS" {
-                crsList.append("")
+        if (elementName == "westBoundLongitude" || elementName == "eastBoundLongitude" || elementName == "southBoundLongitude" || elementName == "northBoundLongitude") {
+            if (string.trimmingCharacters(in: .whitespacesAndNewlines) != "") {
+                currentEXBoundingBox.append(Float(string)!)
             }
         }
-        
-        func parser(_ parser: XMLParser, foundCharacters string: String) {
-            let trimmedString = string.trimmingCharacters(in: .whitespacesAndNewlines)
-            
-            if !trimmedString.isEmpty {
-                switch currentElement {
-                case "Title":
-                    currentLayer?.Title += trimmedString
-                case "Abstract":
-                    currentLayer?.Abstract += trimmedString
-                case "Attribution":
-                    currentLayer?.Attribution += trimmedString
-                case "CRS":
-                    crsList[crsList.count - 1] = trimmedString
-                default:
-                    break
-                }
+
+        if (elementName == "BoundingBox") {
+        var bbox = BoundingBoxDTO()
+        var extent = extentObject()
+
+        for (attr_key, attr_val) in attributeDict {
+            if (attr_key == "CRS") {
+                bbox.crs = attr_val
+            }
+            switch attr_key {
+            case "minx":
+                extent.minx = Float(attr_val)
+                break
+            case "maxx":
+                extent.maxx = Float(attr_val)
+                break
+            case "miny":
+                extent.miny = Float(attr_val)
+                break
+            case "maxy":
+                extent.maxy = Float(attr_val)
+                break
+            default:
+                break
             }
         }
-        
-        func parser(_ parser: XMLParser, didEndElement elementName: String, namespaceURI: String?, qualifiedName qName: String?) {
-            if elementName == "Layer", let finishedLayer = currentLayer {
-                layers.append(finishedLayer)
-                currentLayer = nil
-            } else if elementName == "BoundingBox", let finishedBoundingBox = currentBoundingBox {
-                boundingBoxes.append(finishedBoundingBox)
-                currentBoundingBox = nil
-            } else if elementName == "CRS" {
-                currentLayer?.CRS = crsList
-            }
+        bbox.extent = extent
+        currentBoundingBox.append(bbox)
         }
         
-        func parserDidEndDocument(_ parser: XMLParser) {
-            capability = CapabilityDTO(Layer: layers.first ?? LayerDTO(Abstract: "", BoundingBox: [], CRS: [], EX_GeographicBoundingBox: [], Title: "", Layer: [], Attribution: ""))
+        if var parentLayer = stack.last {
+            parentLayer.Layer.append(currentLayer)
+        } else {
+            rootLayer = currentLayer
         }
+        
+        stack.append(currentLayer)
+    }
+    
+    func parser(_ parser: XMLParser,
+                didEndElement elementName: String,
+                namespaceURI nameSpaceURI: String?,
+                qualifiedName: String?) {
+        if (elementName == "Layer") {
+            currentLayer = LayerDTO()
+            currentCrsList = []
+            currentBoundingBox = []
+            currentEXBoundingBox = []
+            _ = stack.popLast()
+        }
+    }
+    
+    func parserDidEndDocument(_ parser: XMLParser) {
+        print("Parsing finished.")
+        print("Line number: \(parser.lineNumber)")
+    }
 }
+
+
+/*if (elementName == "WMS_Capability") {
+hierarchy.version = attributeDict["version"] ?? "unknown"
+}
+
+
+
+if (elementName == "Layer") {
+currentLayer = LayerDTO()
+currentCrsList = []
+currentEXBoundingBox = []
+currentBoundingBox = []
+}
+
+if (elementName == "Title") {
+if (string.trimmingCharacters(in: .whitespacesAndNewlines) != "") {
+    currentLayer.Title = string
+}
+}
+
+if (elementName == "CRS") {
+if (string.trimmingCharacters(in: .whitespacesAndNewlines) != "") {
+    currentCrsList.append(string)
+}
+}
+
+if (elementName == "westBoundLongitude" || elementName == "eastBoundLongitude" || elementName == "southBoundLongitude" || elementName == "northBoundLongitude") {
+if (string.trimmingCharacters(in: .whitespacesAndNewlines) != "") {
+    currentEXBoundingBox.append(Float(string)!)
+}
+}
+
+if (elementName == "BoundingBox") {
+var bbox = BoundingBoxDTO()
+var extent = extentObject()
+
+for (attr_key, attr_val) in attributeDict {
+    if (attr_key == "CRS") {
+        bbox.crs = attr_val
+    }
+    switch attr_key {
+    case "minx":
+        extent.minx = Float(attr_val)
+        break
+    case "maxx":
+        extent.maxx = Float(attr_val)
+        break
+    case "miny":
+        extent.miny = Float(attr_val)
+        break
+    case "maxy":
+        extent.maxy = Float(attr_val)
+        break
+    default:
+        break
+    }
+}
+bbox.extent = extent
+currentBoundingBox.append(bbox)
+}
+
+currentLayer.Abstract = ""
+currentLayer.Attribution = ""
+currentLayer.BoundingBox = currentBoundingBox
+currentLayer.CRS = currentCrsList
+currentLayer.EX_GeographicBoundingBox = currentEXBoundingBox
+capability.Layer = currentLayer
+*/

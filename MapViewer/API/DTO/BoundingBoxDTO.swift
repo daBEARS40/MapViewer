@@ -6,7 +6,13 @@
 //
 
 struct BoundingBoxDTO: Decodable {
-    var crs: String
-    var extent: [Int]
-    var res: [Int]
+    var crs: String? = nil
+    var extent: extentObject? = nil
+}
+
+struct extentObject: Decodable {
+    var minx: Float? = nil
+    var miny: Float? = nil
+    var maxx: Float? = nil
+    var maxy: Float? = nil
 }

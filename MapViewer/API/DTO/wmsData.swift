@@ -6,6 +6,6 @@
 //
 
 struct wmsData: Decodable {
-    var version: String
-    var Capability: CapabilityDTO
+    var version: String? = nil
+    var Capability: CapabilityDTO? = nil
 }

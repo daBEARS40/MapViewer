@@ -6,5 +6,5 @@
 //
 
 struct CapabilityDTO: Decodable {
-    var Layer: LayerDTO
+    var Layer: LayerDTO? = nil
 }

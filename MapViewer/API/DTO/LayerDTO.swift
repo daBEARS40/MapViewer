@@ -6,11 +6,11 @@
 //
 
 struct LayerDTO: Decodable {
-    var Abstract: String
-    var BoundingBox: [BoundingBoxDTO]
-    var CRS: [String]
-    var EX_GeographicBoundingBox: [Int]
-    var Title: String
-    var Layer: [LayerDTO]
-    var Attribution: String
+    var Abstract: String? = ""
+    var BoundingBox: [BoundingBoxDTO]? = []
+    var CRS: [String]? = []
+    var EX_GeographicBoundingBox: [Float]? = nil
+    var Title: String? = ""
+    var Layer: [LayerDTO] = []
+    var Attribution: String? = ""
 }
