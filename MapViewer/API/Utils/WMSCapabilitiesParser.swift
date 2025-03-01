@@ -4,13 +4,13 @@
 //
 //  Created by Lane Levesque on 2025-02-28.
 //
+//  Apple Docs on XMLParserDelegate: https://developer.apple.com/documentation/foundation/xmlparserdelegate
 
 import ObjectiveC
 import Foundation
 
 class WMSCapabilitiesParser: NSObject, XMLParserDelegate {
     
-    var stack: [LayerDTO] = []
     var rootLayer: LayerDTO = LayerDTO()
     var currentLayer: LayerDTO = LayerDTO()
     
