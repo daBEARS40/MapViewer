@@ -15,37 +15,16 @@ struct GeoserverService {
         return "\(user):\(pass)".data(using: .utf8)?.base64EncodedString() ?? ""
     }
     
-    
-    //let key: String = "b5e864961b0b4a258b3212656241402"
-    //var cityName: String = "Abbotsford"
-    //var days: Int = 14
-    
-    func getLayerCapability(completion: @escaping (Result<LayerDTO, Error>) -> Void){
-        guard let url = URL(string: baseUrl) else {
-            completion(.failure(GeoserverError.invalidUrl))
-            return
-        }
+    func getLayerCapabilities() {
+        guard let url = URL(string: baseUrl) else { return }
         
         var request = URLRequest(url: url)
-        request.httpMethod = "GET"
         request.setValue("Basic \(userAndPass)", forHTTPHeaderField: "Authorization")
         
-        URLSession.shared.dataTask(with: request) { data, response, error in
-            if let error = error {
-                completion(.failure(error))
-                return
-            }
-            
-            guard let data = data else {
-                completion(.failure(error!))
-                return
-            }
-            
-            let parser = WMSCapabilitiesParser()
-            if let rootLayer = parser.parse(xmlData: data) {
-                completion(.success(rootLayer))
-            } else {
-                completion(.failure(NSError(domain: "XMLParser", code: 1, userInfo: [NSLocalizedDescriptionKey: "Failed to parse XML"])))
+        URLSession.shared.dataTask(with: request) { data, _, _ in
+            guard let data = data else { return }
+            DispatchQueue.main.async {
+                print(String(data: data, encoding: .utf8) ?? "No data")
             }
         }.resume()
     }
