@@ -6,19 +6,55 @@
 //
 
 import SwiftUI
+import MapKit
 
 struct MapViewerTabView: View {
+    
+    @StateObject var viewModel = MapViewerTabViewModel()
+    @State private var data: LayerDTO?
+    var service: GeoserverService
+    
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+        TabView {
+            Map {
+                
+            }
+            .tabItem {
+                Label("Map", systemImage: "map")
+            }
+            LazyVStack {
+                
+            }
+            .tabItem {
+                Label("Layers", systemImage: "square.2.layers.3d.fill")
+            }
+            LazyVStack {
+                ForEach(MockData.wmsList) { wms in
+                    Text(wms.name)
+                    
+                }
+            }
+            .tabItem {
+                Label("WMS", systemImage: "square.and.pencil")
+            }
         }
-        .padding()
+        .task {
+            do {
+                data = try await service.getLayerCapability()
+                //print(data)
+            } catch GeoserverError.invalidUrl {
+                print("Invalid URL")
+            } catch GeoserverError.invalidResponse {
+                print("Invalid Response")
+            } catch GeoserverError.invalidData {
+                print("Invalid Data")
+            } catch {
+                print("Unexpected Error")
+            }
+        }
     }
 }
 
 #Preview {
-    MapViewerTabView()
+    MapViewerTabView(service: GeoserverService())
 }

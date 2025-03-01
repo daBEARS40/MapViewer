@@ -11,7 +11,7 @@ import SwiftUI
 struct MapViewerApp: App {
     var body: some Scene {
         WindowGroup {
-            MapViewerTabView()
+            MapViewerTabView(service: GeoserverService())
         }
     }
 }
