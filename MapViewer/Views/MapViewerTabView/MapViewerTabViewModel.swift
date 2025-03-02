@@ -24,18 +24,20 @@ final class MapViewerTabViewModel: ObservableObject {
 
         for var wms in wmsList {
             for node in wms.node.childNodes {
-                
-                if (node.tag == "Title") {
+                if (node.tag == "Name") {
                     if (!node.data.contains(":")) {
                         wms.root = node.data
                     }
                 }
-                
-                layerList.append(buildLayerList(node: node, wms: wms))
             }
+            layerList.append(buildLayerList(node: wms.node, wms: wms))
         }
+        
+        print(layerList)
     }
     
+    
+    //TODO: recursion not working right now, not sure why
     func buildLayerList(node: XMLNode, wms: WMSData) -> Layer {
         let layer = Layer()
         
@@ -102,8 +104,11 @@ final class MapViewerTabViewModel: ObservableObject {
             for childNode in childLayerNodes {
                 children.append(buildLayerList(node: childNode, wms: wms))
             }
-            children.reverse()
-            layer.children = children
+            
+            if (children.count > 0) {
+                children.reverse()
+                layer.children = children
+            }
         } else {
             layer.type = "Layer"
         }

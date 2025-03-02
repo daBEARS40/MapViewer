@@ -87,8 +87,9 @@ struct GeoserverService {
             if (node.tag == "Layer") {
                 //Get the real root node
                 return try getRootRootLayerNode(nodes: node.childNodes)
-            } else {
-                return try getRootLayerNode(nodes: node.childNodes)
+            }
+            if let foundNode = try? getRootLayerNode(nodes: node.childNodes) {
+                return foundNode
             }
         }
         throw GeoserverError.noRootLayerFound
@@ -102,62 +103,9 @@ struct GeoserverService {
         for node in nodes {
             if (node.tag == "Layer") {
                 return node
-            } else {
-                throw GeoserverError.noRootLayerFound
             }
         }
         throw GeoserverError.noRootLayerFound
     }
     
 }
-
-
-//    func getLayerCapability() async throws -> LayerDTO {
-//        guard let url = URL(string: baseUrl) else {
-//            throw GeoserverError.invalidUrl
-//        }
-//
-//        var request = URLRequest(url: url)
-//        request.setValue("Basic \(userAndPass)", forHTTPHeaderField: "Authorization")
-//
-//        let (data, _) = try await URLSession.shared.data(for: request)
-//
-//        do {
-//            let xmlParser = WMSCapabilitiesParser(data: data)
-//            var tree = xmlParser.parse()
-//            return parseLayerCapability(node: tree ?? XMLNode(tag: "", data: "", attributes: [:], childNodes: []))
-//            //return LayerDTO()
-//        }
-//    }
-//
-//    func parseLayerCapability(node: XMLNode) -> LayerDTO {
-//        var rootLayer = LayerDTO()
-//
-//        let version = node.getAttribute("version")
-//
-//        rootLayer = buildLayerList(node: node, layer: &rootLayer)
-//
-//        return rootLayer
-//    }
-//
-//    //trying to write recursive function here, go through nodes and return a full layerlist
-//
-//    func buildLayerList(node: XMLNode, layer: inout LayerDTO) -> LayerDTO {
-//        if node.tag == "Layer" {
-//            for childNode in node.childNodes {
-//                switch childNode.tag {
-//                case "Title":
-//                    layer.Title = childNode.data
-//                    break
-//                default:
-//                    break
-//                }
-//                if childNode.childNodes.count > 0 {
-//                    return buildLayerList(node: childNode, layer: &layer)
-//                } else {
-//                    return layer
-//                }
-//            }
-//        }
-//        return layer
-//    }
