@@ -47,7 +47,6 @@ final class MapViewerTabViewModel: ObservableObject {
         
         var minScale: Int = 0
         var crs: String = ""
-        var styles: [Style] = []
         
         var childLayerNodes: [XMLNode] = []
         
@@ -55,95 +54,37 @@ final class MapViewerTabViewModel: ObservableObject {
             
             switch childNode.tag {
             case "Title":
-                layer.title = childNode.data
+                layer.title = node.data
                 break
             case "Name":
                 if (wms.root.isEmpty) {
-                    layer.name = childNode.data
+                    layer.name = node.data
                 } else {
-                    layer.name = "\(wms.root):\(childNode.data)"
+                    layer.name = "\(wms.root):\(node.data)"
                 }
                 break
             case "KeywordList":
-                if (childNode.data.isEmpty) {
+                if (node.data.isEmpty) {
                     layer.keywords = ["layerGroup", "layerContainer"]
                 } else {
-                    layer.keywords = getDataFromChildTags(node: childNode, tag: "Keyword")
+                    layer.keywords = getDataFromChildTags(node: node, tag: "Keyword")
                 }
             case "MaxScaleDenominator":
-                layer.maxScale = Int(childNode.data) ?? 25000000
+                layer.maxScale = Int(node.data) ?? 25000000
                 break
             case "MinScaleDenominator":
-                minScale = Int(childNode.data) ?? 0
+                minScale = Int(node.data) ?? 0
                 break
             case "CRS":
                 if (crs.isEmpty) {
-                    crs = childNode.data
+                    crs = node.data
                 }
                 break
             case "Attribution":
-                let attr = getDataFromChildTags(node: childNode, tag: "Attribution")
+                let attr = getDataFromChildTags(node: node, tag: "Attribution")
                 if (attr.count > 0) {
                     layer.attribution = attr[0]
                 }
-            case "BoundingBox":
-                if (childNode.getAttribute("CRS") == "EPSG:3857") {
-                    var extent: [Double] = []
-                    //TODO: why do i have to check both the return value of getAttribute AND the parsing into a Double? much to learn
-                    extent.append(Double(childNode.getAttribute("minx") ?? "0.0") ?? 0.0)
-                    extent.append(Double(childNode.getAttribute("minx") ?? "0.0") ?? 0.0)
-                    extent.append(Double(childNode.getAttribute("minx") ?? "0.0") ?? 0.0)
-                    extent.append(Double(childNode.getAttribute("minx") ?? "0.0") ?? 0.0)
-                    layer.extent = extent
-                }
-                break
-            case "Style":
-                var shouldBreakOuterLoop: Bool = false
-                var style: Style = Style()
-                var legendURL: LegendURL = LegendURL()
-                for subChildNode in childNode.childNodes {
-                    switch subChildNode.tag {
-                    case "Name":
-                        if (subChildNode.data.contains("default-style")) {
-                            shouldBreakOuterLoop = true
-                            break
-                        }
-                        style.name = subChildNode.data
-                        break
-                    case "Title":
-                        style.title = subChildNode.data
-                        break
-                    case "LegendURL":
-                        var size: [Int] = []
-                        //TODO: same question??
-                        size.append(Int(subChildNode.getAttribute("width") ?? "20") ?? 20)
-                        size.append(Int(subChildNode.getAttribute("height") ?? "20") ?? 20)
-                        legendURL.size = size
-                        
-                        for subSubChildNode in subChildNode.childNodes {
-                            switch subSubChildNode.tag {
-                            case "OnlineResource":
-                                legendURL.onlineResource = subSubChildNode.getAttribute("xlink:href") ?? ""
-                                break
-                            case "Format":
-                                legendURL.format = subSubChildNode.data
-                                break
-                            default:
-                                break
-                            }
-                        }
-                        style.legendURL.append(legendURL)
-                        styles.append(style)
-                        break
-                    default:
-                        break
-                    }
-                    if (shouldBreakOuterLoop) {
-                        break
-                    }
-                }
-                
-                break
             case "Layer":
                 childLayerNodes.append(childNode)
                 break
@@ -155,7 +96,6 @@ final class MapViewerTabViewModel: ObservableObject {
         
         layer.minScale = minScale
         layer.geoserverSrs = crs
-        layer.styles = styles
         
         if (childLayerNodes.count > 0) {
             layer.type = "LayerGroup"
