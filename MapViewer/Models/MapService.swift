@@ -13,12 +13,11 @@ struct MapService: Hashable, Identifiable {
     let url: String
     let user: String
     let pass: String
-}
-
-struct MockData {
-    static let wmsList = [
-        MapService(name: "North Vancouver", url: "https://www.google.ca", user: "username", pass:"pass"),
-        MapService(name: "Agrilyze Shared", url: "https://www.google.ca", user: "username", pass:"pass"),
-        MapService(name: "Midwest Surveys", url: "https://www.google.ca", user: "username", pass:"pass"),
-    ]
+    
+    init(name: String, url: String, user: String, pass: String) {
+        self.name = name
+        self.url = url
+        self.user = user
+        self.pass = pass
+    }
 }
