@@ -9,7 +9,6 @@ class Layer {
     var title: String
     var name: String
     var keywords: [String]
-    var boundingBox: [BoundingBoxDTO]
     var crs: [String]
     var attribution: String
     var visible: Int
@@ -28,6 +27,7 @@ class Layer {
     var extent: [Double]
     var defaultOn: Bool
     var type: String
+    var styles: [Style]
     var parent: Layer?
     var children: [Layer]
     
@@ -35,7 +35,6 @@ class Layer {
         self.title = ""
         self.name = ""
         self.keywords = []
-        self.boundingBox = []
         self.crs = []
         self.attribution = ""
         self.visible = 0
@@ -54,15 +53,15 @@ class Layer {
         self.extent = []
         self.defaultOn = false
         self.type = ""
+        self.styles = []
         self.parent = nil
         self.children = []
     }
-    
-    init(title: String, name: String, keywords: [String], boundingBox: [BoundingBoxDTO], crs: [String], attribution: String, visible: Int, readable: Int, writeable: Int, searchable: Int, selectable: Int, legend: Int, opacity: Double, minScale: Int, maxScale: Int, url: String, user: String, pass: String, geoserverSrs: String, extent: [Double], defaultOn: Bool, type: String, parent: Layer, children: [Layer]) {
+
+    init(title: String, name: String, keywords: [String], crs: [String], attribution: String, visible: Int, readable: Int, writeable: Int, searchable: Int, selectable: Int, legend: Int, opacity: Double, minScale: Int, maxScale: Int, url: String, user: String, pass: String, geoserverSrs: String, extent: [Double], defaultOn: Bool, type: String, styles: [Style], parent: Layer, children: [Layer]) {
         self.title = title
         self.name = name
         self.keywords = keywords
-        self.boundingBox = boundingBox
         self.crs = crs
         self.attribution = attribution
         self.visible = visible
@@ -81,6 +80,7 @@ class Layer {
         self.extent = extent
         self.defaultOn = defaultOn
         self.type = type
+        self.styles = styles
         self.parent = parent
         self.children = children
     }
