@@ -5,6 +5,6 @@
 //  Created by Lane Levesque on 2025-02-28.
 //
 
-struct CapabilityDTO: Decodable {
-    var Layer: LayerDTO? = nil
+struct CapabilityDTO {
+    var Layer: Layer? = nil
 }

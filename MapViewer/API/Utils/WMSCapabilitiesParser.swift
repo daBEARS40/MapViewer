@@ -49,6 +49,12 @@ class WMSCapabilitiesParser: NSObject, XMLParserDelegate {
             tree = lastElement
         }
     }
+    
+    func parser(_ parser: XMLParser, parseErrorOccurred: any Error) {
+        print("Parse error at line: \(parser.lineNumber). Aborting.")
+        parser.abortParsing()
+    }
+
 
     func parser(_ parser: XMLParser, foundCharacters string: String) {
         stack.last?.data = string
