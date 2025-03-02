@@ -29,7 +29,6 @@ struct MapViewerTabView: View {
                 }) {
                     Label("button", systemImage: "arrow.up")
                 }
-                
             }
             .tabItem {
                 Label("Layers", systemImage: "square.2.layers.3d.fill")

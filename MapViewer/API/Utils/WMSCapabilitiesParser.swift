@@ -7,13 +7,11 @@
 //  Apple Docs on XMLParserDelegate: https://developer.apple.com/documentation/foundation/xmlparserdelegate
 //
 //  Another useful link: https://blog.logrocket.com/xml-parsing-swift/
-//
 
 import ObjectiveC
 import Foundation
 
 class WMSCapabilitiesParser: NSObject, XMLParserDelegate {
-    
     private let parser: XMLParser
     private var stack = [XMLNode]()
     private var tree: XMLNode?

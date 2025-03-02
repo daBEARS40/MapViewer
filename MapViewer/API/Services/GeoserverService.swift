@@ -107,5 +107,4 @@ struct GeoserverService {
         }
         throw GeoserverError.noRootLayerFound
     }
-    
 }

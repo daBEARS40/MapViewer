@@ -187,5 +187,4 @@ final class MapViewerTabViewModel: ObservableObject {
         
         return data
     }
-
 }
