@@ -5,7 +5,10 @@
 //  Created by Lane Levesque on 2025-02-28.
 //
 
-class Layer {
+import Foundation
+
+class Layer: Identifiable {
+    var id = UUID()
     var title: String
     var name: String
     var keywords: [String]

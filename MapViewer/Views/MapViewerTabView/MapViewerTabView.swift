@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import MapKit
 
 struct MapViewerTabView: View {
     
@@ -14,33 +13,24 @@ struct MapViewerTabView: View {
     
     var body: some View {
         TabView {
-            Map {
-                
-            }
+            MapView(viewModel: viewModel.mapViewModel)
             .tabItem {
                 Label("Map", systemImage: "map")
             }
-            LazyVStack {
-                Button(action: {
-                    Task {
-                        try await viewModel.populateLayerHierarchy()
-                        print(viewModel.layerList)
-                    }
-                }) {
-                    Label("button", systemImage: "arrow.up")
-                }
-            }
+            LayersView(viewModel: viewModel.layersViewModel)
             .tabItem {
                 Label("Layers", systemImage: "square.2.layers.3d.fill")
             }
-            LazyVStack {
-                ForEach(viewModel.mapServices) { wms in
-                    Text(wms.name)
-                    
-                }
-            }
+            WMSView(viewModel: viewModel.wmsViewModel)
             .tabItem {
                 Label("WMS", systemImage: "square.and.pencil")
+            }
+        }
+        .task {
+            do {
+                try await viewModel.initMapViewer()
+            } catch {
+                print("Error")
             }
         }
     }
