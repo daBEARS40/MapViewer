@@ -52,7 +52,7 @@ final class MapViewerTabViewModel: ObservableObject {
         
         for childNode in node.childNodes {
             
-            switch node.tag {
+            switch childNode.tag {
             case "Title":
                 layer.title = node.data
                 break

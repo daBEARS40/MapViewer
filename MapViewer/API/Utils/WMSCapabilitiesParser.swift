@@ -8,7 +8,6 @@
 //
 //  Another useful link: https://blog.logrocket.com/xml-parsing-swift/
 //
-//  Could be the solution to all of my woes? https://www.hackingwithswift.com/forums/swift/xml-parser/10902
 
 import ObjectiveC
 import Foundation
@@ -57,6 +56,8 @@ class WMSCapabilitiesParser: NSObject, XMLParserDelegate {
 
 
     func parser(_ parser: XMLParser, foundCharacters string: String) {
-        stack.last?.data = string
+        if (string.trimmingCharacters(in: .whitespacesAndNewlines) != "") {
+            stack.last?.data = string
+        }
     }
 }
