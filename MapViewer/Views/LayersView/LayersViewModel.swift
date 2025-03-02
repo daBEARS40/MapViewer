@@ -15,7 +15,6 @@ class LayersViewModel: ObservableObject {
     
     func start(mapServices: [MapService]) async throws {
         try await populateLayerHierarchy(mapServices: mapServices)
-        print("Layers View Model Started!")
     }
     
     func populateLayerHierarchy(mapServices: [MapService]) async throws -> Void {

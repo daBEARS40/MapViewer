@@ -19,6 +19,5 @@ class WMSViewModel: ObservableObject {
     
     func start() {
         getMapServices()
-        print("WMSView Model Started!")
     }
 }

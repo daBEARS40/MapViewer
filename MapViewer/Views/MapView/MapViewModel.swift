@@ -9,7 +9,5 @@ import Foundation
 
 class MapViewModel: ObservableObject {
     
-    func start() {
-        print("Map View Model Started!")
-    }
+    func start() {}
 }
