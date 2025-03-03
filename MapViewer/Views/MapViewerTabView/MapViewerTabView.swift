@@ -28,7 +28,7 @@ struct MapViewerTabView: View {
         }
         .task {
             do {
-                try await viewModel.initMapViewer()
+                try viewModel.initMapViewer()
             } catch {
                 print("Error")
             }

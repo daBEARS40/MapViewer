@@ -14,9 +14,9 @@ final class MapViewerTabViewModel: ObservableObject {
     @Published var wmsViewModel = WMSViewModel()
     @Published var mapViewModel = MapViewModel()
     
-    func initMapViewer() async throws {
+    func initMapViewer() throws {
         wmsViewModel.start()
-        try await layersViewModel.start(mapServices: wmsViewModel.mapServices)
+        try layersViewModel.start(mapServices: wmsViewModel.mapServices)
         mapViewModel.start()
     }
     

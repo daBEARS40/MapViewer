@@ -7,6 +7,7 @@
 
 import Foundation
 
+@MainActor
 class LayersViewModel: ObservableObject {
     
     @Published var layerList: [Layer] = []
@@ -20,13 +21,19 @@ class LayersViewModel: ObservableObject {
     
     private var service = GeoserverService()
     
-    func start(mapServices: [MapService]) async throws {
-        try await populateLayerHierarchy(mapServices: mapServices)
+    func start(mapServices: [MapService]) throws {
+        Task {
+            do {
+                try await self.populateLayerHierarchy(mapServices: mapServices)
+            } catch {
+                print("broke")
+            }
+        }
     }
     
     func populateLayerHierarchy(mapServices: [MapService]) async throws -> Void {
         let wmsList: [WMSData] = try await service.getAllCapabilitiesForWMSList(mapServices: mapServices)
-
+    
         for var wms in wmsList {
             for node in wms.node.childNodes {
                 if (node.tag == "Name") {
@@ -39,8 +46,6 @@ class LayersViewModel: ObservableObject {
         }
     }
     
-    
-    //TODO: recursion not working right now, not sure why
     func buildLayerList(node: XMLNode, wms: WMSData) -> Layer {
         let layer = Layer()
         
