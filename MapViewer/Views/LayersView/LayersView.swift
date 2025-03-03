@@ -14,14 +14,30 @@ struct LayersView: View {
     var body: some View {
         NavigationStack {
             List {
-                //viewModel.layerListPreview
-                OutlineGroup(viewModel.layerList, id: \.id, children: \.children) { subLayer in
-                    Text(subLayer.title).font(.subheadline)
+                OutlineGroup(viewModel.layerList, id: \.id, children: \.children) { layer in
+                    HStack {
+                        ToggleButton(isEnabled: layer.readable == 1)
+                        
+                        Text(layer.title)
+                            .font(.subheadline)
+                    }
                 }
-                .listStyle(SidebarListStyle())
             }
             .navigationTitle("Layers")
         }
+    }
+}
+
+struct ToggleButton: View {
+    @State var isEnabled: Bool
+
+    var body: some View {
+        Button(action: { isEnabled.toggle() }) {
+            Circle()
+                .fill(isEnabled ? Color.blue : Color.gray)
+                .frame(width: 16, height: 16)
+        }
+        .buttonStyle(BorderlessButtonStyle()) // Prevents row selection when clicking the button
     }
 }
 
@@ -37,11 +53,3 @@ struct LayersView: View {
         ])
     ]))
 }
-
-//ForEach(viewModel.layerList, id: \.id) { layer in
-
-//            List {
-//                OutlineGroup(viewModel.layerListPreview, id: \.id, children: \.children) { layer in
-//                        Text(layer.title).font(.subheadline)
-//                    }.listStyle(SidebarListStyle())
-//            }.listStyle(SidebarListStyle())
