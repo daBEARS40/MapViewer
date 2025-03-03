@@ -44,7 +44,7 @@ struct ToggleButton: View {
                 let idx = mapViewModel.enabledLayers.firstIndex(where: { $0.id == layer.id })
                 mapViewModel.enabledLayers.remove(at: idx!)
             }
-            print(mapViewModel.enabledLayers.count)
+            mapViewModel.refreshMap()
         }) {
             Circle()
                 .fill(isEnabled ? Color.blue : Color.gray)

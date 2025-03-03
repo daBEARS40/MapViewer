@@ -11,6 +11,10 @@ class MapViewModel: ObservableObject {
     
     var enabledLayers: [Layer] = []
     
+    func refreshMap() {
+        print(enabledLayers.count)
+    }
+    
     func start() {
     }
 }
