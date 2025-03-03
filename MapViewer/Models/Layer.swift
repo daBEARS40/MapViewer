@@ -32,7 +32,7 @@ class Layer: Identifiable {
     var type: String
     var styles: [Style]
     var parent: Layer?
-    var children: [Layer]
+    var children: [Layer]?
     
     init() {
         self.title = ""
@@ -60,6 +60,35 @@ class Layer: Identifiable {
         self.parent = nil
         self.children = []
     }
+    
+    //Constructor for Preview
+    init(title: String, children: [Layer]) {
+        self.title = title
+        self.name = ""
+        self.keywords = []
+        self.crs = []
+        self.attribution = ""
+        self.visible = 0
+        self.readable = 0
+        self.writeable = 0
+        self.searchable = 0
+        self.selectable = 0
+        self.legend = 0
+        self.opacity = 1.0
+        self.minScale = 0
+        self.maxScale = 24
+        self.url = ""
+        self.user = ""
+        self.pass = ""
+        self.geoserverSrs = ""
+        self.extent = []
+        self.defaultOn = false
+        self.type = ""
+        self.styles = []
+        self.parent = nil
+        self.children = children
+    }
+    //End Preview
 
     init(title: String, name: String, keywords: [String], crs: [String], attribution: String, visible: Int, readable: Int, writeable: Int, searchable: Int, selectable: Int, legend: Int, opacity: Double, minScale: Int, maxScale: Int, url: String, user: String, pass: String, geoserverSrs: String, extent: [Double], defaultOn: Bool, type: String, styles: [Style], parent: Layer, children: [Layer]) {
         self.title = title

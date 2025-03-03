@@ -12,7 +12,7 @@ struct WMSLinkView: View {
     let mapService: MapService
     
     var body: some View {
-        Label(mapService.name, systemImage: "")
+        Text(mapService.name)
             .font(.title2)
             .bold()
             

@@ -11,6 +11,13 @@ class LayersViewModel: ObservableObject {
     
     @Published var layerList: [Layer] = []
     
+    //Mock Data for Previews
+    var layerListPreview: [Layer] = []
+    init(layerListPreview: [Layer]) {
+        self.layerListPreview = layerListPreview
+    }
+    //End Mock
+    
     private var service = GeoserverService()
     
     func start(mapServices: [MapService]) async throws {

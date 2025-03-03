@@ -10,7 +10,7 @@ import SwiftUI
 @MainActor
 final class MapViewerTabViewModel: ObservableObject {
 
-    @Published var layersViewModel = LayersViewModel()
+    @Published var layersViewModel = LayersViewModel(layerListPreview: [])
     @Published var wmsViewModel = WMSViewModel()
     @Published var mapViewModel = MapViewModel()
     

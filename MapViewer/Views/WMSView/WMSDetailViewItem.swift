@@ -14,7 +14,7 @@ struct WMSDetailViewItem: View {
     
     var body: some View {
         HStack() {
-            Label("\(labelName):", systemImage: "")
+            Text("\(labelName):")
                 .frame(width: 100)
             ScrollView(.horizontal) {
                 Text(value)
