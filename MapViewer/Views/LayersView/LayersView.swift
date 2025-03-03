@@ -9,14 +9,15 @@ import SwiftUI
 
 struct LayersView: View {
     
-    @ObservedObject var viewModel: LayersViewModel
+    var viewModel: LayersViewModel
+    var mapViewModel: MapViewModel
     
     var body: some View {
         NavigationStack {
             List {
                 OutlineGroup(viewModel.layerList, id: \.id, children: \.children) { layer in
                     HStack {
-                        ToggleButton(isEnabled: layer.readable == 1)
+                        ToggleButton(isEnabled: layer.readable == 1, layer: layer, mapViewModel: mapViewModel)
                         
                         Text(layer.title)
                             .font(.subheadline)
@@ -30,9 +31,21 @@ struct LayersView: View {
 
 struct ToggleButton: View {
     @State var isEnabled: Bool
+    var layer: Layer
+    var mapViewModel: MapViewModel
 
     var body: some View {
-        Button(action: { isEnabled.toggle() }) {
+        Button(action: {
+            isEnabled.toggle()
+            layer.readable = isEnabled ? 1 : 0
+            if (layer.readable == 1) {
+                mapViewModel.enabledLayers.append(layer)
+            } else {
+                let idx = mapViewModel.enabledLayers.firstIndex(where: { $0.id == layer.id })
+                mapViewModel.enabledLayers.remove(at: idx!)
+            }
+            print(mapViewModel.enabledLayers.count)
+        }) {
             Circle()
                 .fill(isEnabled ? Color.blue : Color.gray)
                 .frame(width: 16, height: 16)
@@ -51,5 +64,5 @@ struct ToggleButton: View {
             Layer(title: "City of Pitt Meadows Land", children: []),
             Layer(title: "City of Pitt Meadows Water", children: [])
         ])
-    ]))
+    ]), mapViewModel: MapViewModel())
 }

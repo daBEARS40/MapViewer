@@ -6,11 +6,13 @@
 //
 
 import Foundation
+import Observation
 
 @MainActor
-class LayersViewModel: ObservableObject {
+@Observable class LayersViewModel {
     
-    @Published var layerList: [Layer] = []
+    var layerList: [Layer] = []
+    var mapViewModel: MapViewModel?
     
     //Mock Data for Previews
     var layerListPreview: [Layer] = []
@@ -21,7 +23,8 @@ class LayersViewModel: ObservableObject {
     
     private var service = GeoserverService()
     
-    func start(mapServices: [MapService]) throws {
+    func start(mapServices: [MapService], mapViewModel: MapViewModel) throws {
+        self.mapViewModel = mapViewModel
         Task {
             do {
                 try await self.populateLayerHierarchy(mapServices: mapServices)

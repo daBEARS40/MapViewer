@@ -9,6 +9,8 @@ import Foundation
 
 class MapViewModel: ObservableObject {
     
+    var enabledLayers: [Layer] = []
+    
     func start() {
     }
 }

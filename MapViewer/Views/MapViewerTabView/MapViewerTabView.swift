@@ -9,7 +9,7 @@ import SwiftUI
 
 struct MapViewerTabView: View {
     
-    @StateObject var viewModel = MapViewerTabViewModel()
+    var viewModel = MapViewerTabViewModel()
     
     var body: some View {
         TabView {
@@ -17,7 +17,7 @@ struct MapViewerTabView: View {
             .tabItem {
                 Label("Map", systemImage: "map")
             }
-            LayersView(viewModel: viewModel.layersViewModel)
+            LayersView(viewModel: viewModel.layersViewModel, mapViewModel: viewModel.mapViewModel)
             .tabItem {
                 Label("Layers", systemImage: "square.2.layers.3d.fill")
             }

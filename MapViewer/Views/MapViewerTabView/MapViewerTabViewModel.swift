@@ -6,18 +6,19 @@
 //
 
 import SwiftUI
+import Observation
 
 @MainActor
-final class MapViewerTabViewModel: ObservableObject {
+@Observable final class MapViewerTabViewModel {
 
-    @Published var layersViewModel = LayersViewModel(layerListPreview: [])
-    @Published var wmsViewModel = WMSViewModel()
-    @Published var mapViewModel = MapViewModel()
+    var wmsViewModel = WMSViewModel()
+    var mapViewModel = MapViewModel()
+    var layersViewModel = LayersViewModel(layerListPreview: [])
     
     func initMapViewer() throws {
         wmsViewModel.start()
-        try layersViewModel.start(mapServices: wmsViewModel.mapServices)
         mapViewModel.start()
+        try layersViewModel.start(mapServices: wmsViewModel.mapServices, mapViewModel: mapViewModel)
     }
     
 }

@@ -6,8 +6,9 @@
 //
 
 import Foundation
+import Observation
 
-class Layer: Identifiable {
+@Observable class Layer: Identifiable {
     var id = UUID()
     var title: String
     var name: String
