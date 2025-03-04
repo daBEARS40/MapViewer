@@ -13,7 +13,7 @@ struct MapView: View {
     @ObservedObject var viewModel: MapViewModel
     
     var body: some View {
-        Map {
+        Map() {
             
         }
     }
